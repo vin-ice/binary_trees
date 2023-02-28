@@ -4,7 +4,7 @@
  * binary_tree_node - creates a binary node
  * @parent: Pointer to the payment node
  * @value: Value to put in the new node
- * Return: Pointer ti new node or NULL
+ * Return: Pointer to new node or NULL
 */
 binary_tree_t *binary_tree_node(binary_tree_t *parent, int value)
 {
