@@ -1,6 +1,34 @@
 #include "binary_trees.h"
 
 /**
+ * get_a_depth - returns a depth to work with (left biased)
+ * @tree: tree to get depth from
+ * Return: depth
+*/
+size_t get_a_depth(const binary_tree_t *tree)
+{
+	if (tree->left)
+		return (1 + get_a_depth(tree->left));
+	return (0);
+}
+
+/**
+ * _venture - ventures tree and compares height and levels
+ * @tree: tree to venture
+ * @depth: ideal depth to venture
+ * @level: level currently venturing
+*/
+size_t _venture(const binary_tree_t *tree, size_t depth, int level)
+{
+	if (!tree->left && !tree->right)
+		return (level == (int) depth ? 1 : 0);
+	if (!tree->left || !tree->right)
+		return (0);
+	return (_venture(tree->left, depth, level + 1) &&
+			_venture(tree->right, depth, level + 1));
+}
+
+/**
  * binary_tree_is_perfect - checks if a binary tree is perfect
  * @tree: a pointer to the root node of the tree to check
  *
@@ -10,72 +38,12 @@
  */
 int binary_tree_is_perfect(const binary_tree_t *tree)
 {
-	size_t height = 0;
-	size_t nodes = 0;
-	size_t power = 0;
+	size_t d;
 
-	if (!tree)
-		return (0);
-
-	if (!tree->right && !tree->left)
-		return (1);
-
-	height = binary_tree_height(tree);
-	nodes = binary_tree_size(tree);
-
-	power = (size_t)_pow_recursion(2, height + 1);
-	return (power - 1 == nodes);
-}
-
-/**
- *_pow_recursion - returns the value of x raised to the power of y
- *@x: the value to exponentiate
- *@y: the power to raise x to
- *Return: x to the power of y, or -1 if y is negative
- */
-
-int _pow_recursion(int x, int y)
-{
-	if (y < 0)
-		return (-1);
-	if (y == 0)
-		return (1);
-	else
-		return (x * _pow_recursion(x, y - 1));
-
-}
-
-/**
- * binary_tree_size - measures the size of a binary tree
- * @tree: tree to measure the size of
- *
- * Return: size of the tree
- *         0 if tree is NULL
- */
-size_t binary_tree_size(const binary_tree_t *tree)
-{
-	if (!tree)
-		return (0);
-
-	return (binary_tree_size(tree->left) + binary_tree_size(tree->right) + 1);
-}
-
-/**
- * binary_tree_height - measures the height of a binary tree
- * @tree: tree to measure the height of
- *
- * Return: height of the tree
- *         0 if tree is NULL
- */
-size_t binary_tree_height(const binary_tree_t *tree)
-{
-	size_t height_l = 0;
-    size_t height_r = 0;
-
-	if (!tree)
-		return (0);
-
-	height_l = tree->left ? 1 + binary_tree_height(tree->left) : 0;
-	height_r = tree->right ? 1 + binary_tree_height(tree->right) : 0;
-	return (height_l > height_r ? height_l : height_r);
+	if (tree)
+	{
+		d = get_a_depth(tree);
+		return (_venture(tree, d, 0));
+	}	
+	return (0);
 }
