@@ -1,36 +1,23 @@
 #include "binary_trees.h"
 
 /**
- * enqueue - adds element to end of array
- * @arr: array to add ele
- * @ele: element to insert
- * @i: index to insert
+ * _traverse_level - traveses nodes at given level and
+ * applies function
+ * @tree: tree
+ * @func: Operation to apply on nodes visited
+ * @level: current level
 */
-void enqueue(binary_tree_t **arr, binary_tree_t *ele, int i)
+void _traverse_level(const binary_tree_t *tree, void (*func)(int), size_t level)
 {
-    if (*arr == NULL || ele == NULL)
-        return;
-    arr[i] = ele;
-}
-/**
- * dequeue - removes first element and shifts
- *  the rest
- * @arr: array to remove first ele
-*/
-binary_tree_t *dequeue(binary_tree_t **arr)
-{
-    int i;
-    binary_tree_t *node = NULL;
-    
-    if (arr[0])
+    if (level == 1)
+        func(tree->n);
+    else
     {
-        node = arr[0];
-        for (i = 0; i < 3; i++)
-            arr[i] = arr[i + 1];
-        arr[i] = NULL;
+        _traverse_level(tree->left, func, level - 1);
+        _traverse_level(tree->right, func, level - 1);
     }
-    return (node);
 }
+
 /**
  * binary_tree_levelorder - traverses tree using level-order traversal
  * @tree: Pointer to root node of the tree
@@ -40,21 +27,29 @@ binary_tree_t *dequeue(binary_tree_t **arr)
 */
 void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 {
-    binary_tree_t *queue[4], *front = NULL;
-    int rear = 0;
+    size_t height, level;
 
     if (!tree || !func)
         return;
     
-    enqueue(queue, (binary_tree_t *) tree, rear++);
-    while ((front = dequeue(queue)))
-    {
-        rear--;
-        if (front->left)
-            enqueue(queue, front->left, rear++);
-        if (front->right)
-            enqueue(queue, front->right, rear++);
-        func(front->n);
-    }
+    height = binary_tree_height(tree) + 1;
 
+    for (level = 1; level <= height; level++)
+        _traverse_level(tree, func, level);    
+}
+
+/**
+ * binary_tree_height - measures height of a binary tree
+ * @tree: Pointer to root node of the 
+ * Return: 0 if tree is NULL
+*/
+size_t binary_tree_height(const binary_tree_t *tree)
+{
+    size_t l_height = 0, r_height;
+
+    if (tree == NULL)
+        return (0);
+    l_height = tree->left ? 1 + binary_tree_height(tree->left) : 0;
+    r_height = tree->right ? 1 + binary_tree_height(tree->right) : 0;
+    return ((l_height > r_height) ? l_height : r_height);
 }
